@@ -1,47 +1,31 @@
-/**
- * Load and Display an OBJ Shape. 
- * 
- * The loadShape() command is used to read simple SVG (Scalable Vector Graphics)
- * files and OBJ (Object) files into a Processing sketch. This example loads an
- * OBJ file of a rocket and displays it to the screen. 
- */
-float posX;
-float posY;
-float posZ;
+float posX = 0;
+float posY = 0;
+float posZ = -500;
 
 PShape rocket;
 PImage textureimg;
-float ry;
 
-
-void keyPressed(){
-  
-  if (keyCode == UP){
-      posZ -= 5;
-  }else{
-     if (keyCode == DOWN){
-        posY += 5; 
-     }else{
-        if (keyCode == LEFT){
-           posZ += 5; 
-          
-        }
-     }
-    
+void keyPressed() {
+  if (keyCode == UP) {
+    posZ += 10; // Augmentez la position Z lors de l'appui sur la touche UP
+  } else if (keyCode == DOWN) {
+    posZ -= 10; // Diminuez la position Z lors de l'appui sur la touche DOWN
   }
-    
-    
   
+  if (keyCode == LEFT) {
+    posX += 10; // Augmentez la position X lors de l'appui sur la touche LEFT
+  } else if (keyCode == RIGHT) {
+    posX -= 10; // Diminuez la position X lors de l'appui sur la touche RIGHT
+  }
   
-  
+  if (keyCode == TAB) {
+    posY += 10; // Augmentez la position Y lors de l'appui sur la touche UP
+  } else if (keyCode == ENTER) {
+    posY -= 10; // Diminuez la position Y lors de l'appui sur la touche DOWN
+  }
 }
-  
-  
-  
+
 public void setup() {
-  posX = 0;
-  posY = 0;
-  posZ = 0;
   size(1000, 800, P3D);
   textureimg = loadImage("StAuban_texture.jpg");
   rocket = loadShape("hypersimple.obj");
@@ -53,24 +37,14 @@ public void draw() {
   pushMatrix();
   background(255);
   textureMode(NORMAL);
-  
-  
-  
+
   lights();
- 
-  
-  camera(60,-10,-190, 1000,10000,-1000,0,0,1);
+  camera(posX, posY, posZ, 0, 0, 0, 0, 1, 0);
+  print(posX, posY, posZ, "\n");
   //perspective();
-  translate(10, 10, 10);
-  box(20);
   
-  
-  
-  //rotateX(PI);
-  //rotateY(ry);
   texture(textureimg);
   shape(rocket);
-  
-  ry += 0.02;
+
   popMatrix();
 }
