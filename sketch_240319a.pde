@@ -1,6 +1,6 @@
-float posX = 0;
+float posX = -180;
 float posY = 0;
-float posZ = -500;
+float posZ = -250;
 
 PShape rocket;
 PImage textureimg;
@@ -39,7 +39,7 @@ public void draw() {
   textureMode(NORMAL);
 
   lights();
-  camera(posX, posY, posZ, 0, 0, 0, 0, 1, 0);
+  camera(posX, posY, posZ, posX+10, posY, posZ, 0, 0, 1);
   print(posX, posY, posZ, "\n");
   //perspective();
   
