@@ -4,9 +4,7 @@
 
 ## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Et si on faisait un camp de concentration plutôt que des câbles électriques et des éoliennes ? A la limite on peut faire un camp de concentration écolo alimenté par des éoliennes. Et dans le camp on pourrait mettre des petits personnages avec la tête de mon ex ?
 
 ## Add your files
 
