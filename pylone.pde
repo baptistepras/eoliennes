@@ -42,71 +42,12 @@ Vector bougerSurDroite(Droite D, float ratio){
   
 }
 
-
-
-
-
-
-
-Vector intersect(Droite D1, Droite D2){
-   // Calcule le point d'intersection de deux droites dans l'espace si il existe
-   
-    // Résolution d'un système d'équations
-    
-    //On donne un meilleur nom aux variables
-    float a1, b1, c1, x1, y1, z1,x2, y2, z2, a2, b2, c2;
-    //Le point de depart de la première droite et deuxième droite
-    a1 = D1.depart.x;  a2 = D2.depart.x;
-    b1 = D1.depart.y;  b2 = D2.depart.y;
-    c1 = D1.depart.z;  c2 = D2.depart.z;
- 
-    //Les vecteurs directeurs des droites
-    x1 = D1.v.x;  x2 = D2.v.x;
-    y1 = D1.v.y;  y2 = D2.v.y;
-    z1 = D1.v.z;  z2 = D2.v.z;
-    
-    
-     float d = x2*y1 - y2*x1;
-     
-   if (d == 0){
-   
-      return null; 
-     
-   }else{
-     println(d);
-     float t1 = (1/d)*(-y2*(a2-a1)+x2*(b2-b1));
-     float t2 = (1/d)*(-y1*(a2-a1)+x1*(b2-b1));
-      //println(t1);
-      //println(t2);
-     if (z1*t1-z2*t2 <= c2 - c1 + 1e-6){
-        return new Vector(a1+t1*x1, b1 + t1*y1, c1+t1*z1); 
-     }else{
-       return null;}
-   }
- 
-}
-
-
-void point(PShape struct, Vector Point){
-   struct.vertex(Point.x, Point.y, Point.z); 
+Vector milieu(Vector A, Vector B){
   
-}
-
-
-Droite droiteFrom(Vector A, Vector B){
-   return new Droite(A, new Vector(B.x - A.x, B.y - A.y, B.z- A.z)); 
-  
+   return new Vector((A.x + B.x)/2, (A.y + B.y)/2, (A.z + B.z) /2); 
   
   
 }
-
-float roundToTwoDecimalPlaces(float number) {
-   // return round(number * 100) / 100;
-    return number;
-}
-
-
-
 
 Vector symetrie(Vector P){
    return new Vector(-P.x, -P.y, P.z); 
@@ -122,6 +63,188 @@ void drawLine(PShape struct, Vector A, Vector B){
   
 }
 
+float distance(Vector A, Vector B){
+   return sqrt( pow((B.x - A.x), 2) + pow((B.y - A.y), 2) +pow((B.z - A.z), 2));
+  
+}
+
+Droite droiteFrom(Vector A, Vector B){
+   return new Droite(A, new Vector(B.x - A.x, B.y - A.y, B.z- A.z)); 
+  
+  
+  
+}
+
+Vector symetrieX(Vector A){
+   return new Vector(A.y, A.x, A.z); 
+  
+}
+
+Vector symetrie2(Vector A){
+  return new Vector(-A.x, A.y, A.z);
+  
+}
+
+Vector symetrie3(Vector A){
+  return new Vector(A.x, -A.y, A.z);
+  
+}
+
+Vector diff(Vector A, Vector B){
+   return new Vector(B.x - A.x, B.y - A.y, B.z - A.z); 
+  
+}
+
+Vector ajouter(Vector A, Vector B){
+   return new Vector(A.x + B.x, A.y + B.y, A.z + B.z); 
+  
+}
+
+float calculeRatio(int numEtage){
+  return (1- pow(0.9, numEtage))*1.2;
+  
+}
+
+
+void brasGauche(PShape struct, Droite gaucheDevant, Droite gaucheDerriere, Vector milieuDevant, Vector milieuArriere, int etage){
+  float ratio1 = calculeRatio(etage);
+  float ratio2 = calculeRatio(etage + 1);
+  Vector basDevant = bougerSurDroite(gaucheDevant, ratio1);
+  Vector hautDevant = bougerSurDroite(gaucheDevant, ratio2);
+  
+  
+  
+  Vector basDerriere = bougerSurDroite(gaucheDerriere, ratio1);
+  Vector hautDerierre = bougerSurDroite(gaucheDerriere, ratio2);
+  
+  Droite D1 = droiteFrom(milieuDevant, basDevant);
+  
+  Droite D3 = droiteFrom(milieuArriere, basDerriere);
+  
+ Vector extremiteDevant = bougerSurDroite(D1, -5);
+    
+   Vector extremiteBas = bougerSurDroite(D3, -5);
+  
+  
+  
+  
+}
+
+Vector swap(Vector V){
+ return new Vector(-V.y, -V.x, V.z); 
+}
+
+
+void drawlignePylon(PShape struct, Vector A, Vector B){
+ struct.beginShape(LINES);
+   point(struct, A);
+   point(struct, B);
+   point(struct, symetrieX(A));
+    point(struct, symetrieX(B));
+   point(struct, symetrie2(A));
+   point(struct, symetrie2(B));
+   
+   point(struct, symetrie3(A));
+   point(struct, symetrie3(B));
+   
+   struct.endShape();
+  
+  
+}
+
+
+void bras(PShape struct, Vector hautGauche, Vector hautDroite, Vector basGauche, Vector basDroite){
+    float basL = distance(basGauche, basDroite);
+    float hautL = distance(hautGauche, hautDroite);
+    
+    Vector G = basGauche;
+    Vector D = basDroite;
+    
+   
+    Droite bas = droiteFrom(milieu(basGauche,basDroite), basDroite);
+    
+    basGauche = bougerSurDroite(bas, -5);
+    
+    basDroite = bougerSurDroite(bas, 5);
+    
+    drawlignePylon(struct, basGauche, basDroite);
+    drawlignePylon(struct, basDroite, hautDroite);
+    
+    
+    drawlignePylon(struct, swap(basGauche), swap(basDroite));
+    drawlignePylon(struct, swap(basDroite), swap(hautDroite));
+    
+    Droite D1 = droiteFrom(basGauche, hautGauche);
+    Droite D2 = droiteFrom(basGauche, G);
+    Droite D3 =droiteFrom(basDroite, hautDroite);
+    Droite D4 = droiteFrom(basDroite, D);
+    
+    Vector decalage = diff( basGauche, symetrie(basDroite));
+    
+   Vector lastHaut = bougerSurDroite(D1, 0);
+   Vector lastBas = bougerSurDroite(D2, 0);
+  
+   
+   
+    
+    for (int n = 0; n <= 5; n++){
+       float a1 = 0.2*n;
+       float a2 = 0.2*(n+1);
+      Vector BasDevant = bougerSurDroite(D2, a1);
+       Vector HautDevant = bougerSurDroite(D1, a1);
+      
+       
+      
+         
+                  drawlignePylon(struct, HautDevant, BasDevant);
+                 drawlignePylon(struct, swap(HautDevant), swap(BasDevant));  
+                  drawlignePylon(struct,HautDevant, swap(lastHaut));
+                  drawlignePylon(struct, swap(HautDevant), lastHaut);
+                  
+                   BasDevant = bougerSurDroite(D2, a2);
+                   
+                    lastBas = bougerSurDroite(D2, a1);
+                  drawlignePylon(struct,swap(lastBas),BasDevant );
+                  drawlignePylon(struct, swap(BasDevant),lastBas);
+                  
+                  
+  
+       
+       drawlignePylon(struct, HautDevant, BasDevant);
+       drawlignePylon(struct, swap(HautDevant), swap(BasDevant));
+       //drawLine(struct, symetrieX(HautDevant), symetrieX(BasDevant));
+       //drawlignePylon(struct, HautDevant, swap(HautDevant));
+       lastHaut = HautDevant;
+       lastBas = BasDevant;
+      
+    }
+    
+  
+}
+
+
+
+
+void point(PShape struct, Vector Point){
+   struct.vertex(Point.x, Point.y, Point.z); 
+  
+}
+
+
+
+
+float roundToTwoDecimalPlaces(float number) {
+   // return round(number * 100) / 100;
+    return number;
+}
+
+Droite symetrieDroite(Droite D){
+   return new Droite(symetrie(D.depart), symetrie(D.v));
+  
+}
+
+
+
 
 void etage(PShape structure, Vector Pgauche, Vector Pdroite, Droite Dgauche, Droite Ddroite, int numEtage, int nbEtages ){
  
@@ -132,7 +255,7 @@ void etage(PShape structure, Vector Pgauche, Vector Pdroite, Droite Dgauche, Dro
     
   //On calcule les coordonées des points 
     float ratio = (float)numEtage/ (float)nbEtages;
-    ratio = (1- pow(0.9, numEtage))*1.4;
+    ratio =calculeRatio(numEtage);
     Vector hautGauche = bougerSurDroite(Dgauche, ratio);
     Vector hautDroite = bougerSurDroite(Ddroite, ratio);
    // et on trace les lignes
@@ -142,15 +265,24 @@ void etage(PShape structure, Vector Pgauche, Vector Pdroite, Droite Dgauche, Dro
    drawLine(structure, Pdroite, symetrie(hautGauche));
    drawLine(structure, hautDroite, symetrie(Pgauche));
    
-   drawLine(structure, Pgauche, symetrie(hautDroite));
+  drawLine(structure, Pgauche, symetrie(hautDroite));
    drawLine(structure, hautGauche, symetrie(Pdroite));
    
     drawLine(structure, symetrie(Pgauche), symetrie(hautDroite));
    drawLine(structure, symetrie(Pdroite), symetrie(hautGauche));
    
+     if (numEtage == 6){
+      
+       bras(structure, bougerSurDroite(Dgauche, ratio*1.06), bougerSurDroite(Ddroite, ratio*1.06), Pgauche, Pdroite);
+     }
+     if (numEtage == 11){
+      
+       bras(structure, bougerSurDroite(Dgauche, ratio), bougerSurDroite(Ddroite, ratio), Pgauche, Pdroite);
+     }
    
    
-    etage(structure, hautGauche, hautDroite, Dgauche, Ddroite, numEtage + 1, nbEtages);
+   
+    etage(structure, bougerSurDroite(Dgauche, ratio), bougerSurDroite(Ddroite, ratio), Dgauche, Ddroite, numEtage + 1, nbEtages);
    
   }else{
      return; 
@@ -190,7 +322,7 @@ PShape pyl(float hauteur, float base, float angle){
     println(Ddroite);
    
    structure.endShape();
-    etage(structure, basGauche, basDroite, droiteFrom(basGauche, sommet),  droiteFrom(basDroite, sommet), 0, 11);
+    etage(structure, basGauche, basDroite, droiteFrom(basGauche, sommet),  droiteFrom(basDroite, sommet), 0, 15);
      
     
      return structure;
