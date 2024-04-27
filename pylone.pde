@@ -20,6 +20,9 @@ class Vector{
 }
 
 
+
+
+
 class Droite{
    Vector depart;
    Vector v;
@@ -153,7 +156,16 @@ void drawlignePylon(PShape struct, Vector A, Vector B){
 }
 
 
-void bras(PShape struct, Vector hautGauche, Vector hautDroite, Vector basGauche, Vector basDroite){
+
+Vector rotateAxeZ(Vector v, float theta){
+  //Calcule rotation d'un point autour de l'axe z d'un angle theta
+ return new Vector(v.x*cos(theta) - v.y*sin(theta), v.x*sin(theta)+v.y*cos(theta), v.z); 
+  
+}
+
+
+
+void bras(PShape struct, Vector hautGauche, Vector hautDroite, Vector basGauche, Vector basDroite,   Vector[] departFils){
     float basL = distance(basGauche, basDroite);
     float hautL = distance(hautGauche, hautDroite);
     
@@ -161,9 +173,34 @@ void bras(PShape struct, Vector hautGauche, Vector hautDroite, Vector basGauche,
     Vector D = basDroite;
     
    
+    
+   
     Droite bas = droiteFrom(milieu(basGauche,basDroite), basDroite);
     
     basGauche = bougerSurDroite(bas, -5);
+    Vector fil = milieu(basGauche, swap(G));
+    
+   
+    Vector filBas = new Vector(fil.x, fil.y, fil.z *0.92);
+   
+    
+    
+    for (int i = 0; i < 4; i++){
+        departFils[i] = rotateAxeZ(filBas, -i*HALF_PI);
+      
+    }
+    
+    struct.beginShape();
+    struct.strokeWeight(7);
+    drawlignePylon(struct, fil, filBas);
+    
+    struct.endShape();
+    
+    
+    struct.beginShape();
+    struct.strokeWeight(1);
+    
+    struct.endShape();
     
     basDroite = bougerSurDroite(bas, 5);
     
@@ -196,7 +233,7 @@ void bras(PShape struct, Vector hautGauche, Vector hautDroite, Vector basGauche,
        
       
          
-                  drawlignePylon(struct, HautDevant, BasDevant);
+                 drawlignePylon(struct, HautDevant, BasDevant);
                  drawlignePylon(struct, swap(HautDevant), swap(BasDevant));  
                   drawlignePylon(struct,HautDevant, swap(lastHaut));
                   drawlignePylon(struct, swap(HautDevant), lastHaut);
@@ -246,7 +283,7 @@ Droite symetrieDroite(Droite D){
 
 
 
-void etage(PShape structure, Vector Pgauche, Vector Pdroite, Droite Dgauche, Droite Ddroite, int numEtage, int nbEtages ){
+void etage(PShape structure, Vector Pgauche, Vector Pdroite, Droite Dgauche, Droite Ddroite, int numEtage, int nbEtages, Vector[] filsBas, Vector[] filsHaut ){
  
   if (numEtage <= nbEtages){
     //println(Pgauche, Pdroite);
@@ -273,16 +310,16 @@ void etage(PShape structure, Vector Pgauche, Vector Pdroite, Droite Dgauche, Dro
    
      if (numEtage == 6){
       
-       bras(structure, bougerSurDroite(Dgauche, ratio*1.06), bougerSurDroite(Ddroite, ratio*1.06), Pgauche, Pdroite);
+       bras(structure, bougerSurDroite(Dgauche, ratio*1.06), bougerSurDroite(Ddroite, ratio*1.06), Pgauche, Pdroite, filsBas);
      }
      if (numEtage == 11){
       
-       bras(structure, bougerSurDroite(Dgauche, ratio), bougerSurDroite(Ddroite, ratio), Pgauche, Pdroite);
+       bras(structure, bougerSurDroite(Dgauche, ratio), bougerSurDroite(Ddroite, ratio), Pgauche, Pdroite, filsHaut);
      }
    
    
    
-    etage(structure, bougerSurDroite(Dgauche, ratio), bougerSurDroite(Ddroite, ratio), Dgauche, Ddroite, numEtage + 1, nbEtages);
+    etage(structure, bougerSurDroite(Dgauche, ratio), bougerSurDroite(Ddroite, ratio), Dgauche, Ddroite, numEtage + 1, nbEtages, filsBas, filsHaut);
    
   }else{
      return; 
@@ -290,7 +327,7 @@ void etage(PShape structure, Vector Pgauche, Vector Pdroite, Droite Dgauche, Dro
   
   
 }
-PShape pyl(float hauteur, float base, float angle){
+PShape pyl(float hauteur, float base, float angle, Vector[] filsBas, Vector[] filsHaut){
    float cote = sqrt(2) * base;
    PShape pylone = createShape();
    strokeWeight(1);
@@ -322,9 +359,69 @@ PShape pyl(float hauteur, float base, float angle){
     println(Ddroite);
    
    structure.endShape();
-    etage(structure, basGauche, basDroite, droiteFrom(basGauche, sommet),  droiteFrom(basDroite, sommet), 0, 15);
+    etage(structure, basGauche, basDroite, droiteFrom(basGauche, sommet),  droiteFrom(basDroite, sommet), 0, 15, filsBas, filsHaut);
      
     
      return structure;
     //return pylone;
+}
+
+
+
+class Pylone{
+   Vector position; 
+   
+   Pylone(Vector p){
+      position = p; 
+   }
+  
+  
+}
+
+float findZForXY(float x, float y) {
+  float closestDist = Float.MAX_VALUE; // Initialise à une grande valeur
+  float closestZ = 0; // Altitude du point le plus proche
+
+  // Parcourir chaque enfant du modèle
+  for (int i = 0; i < rocket.getChildCount(); i++) {
+    PShape child = rocket.getChild(i);
+
+    // Parcourir chaque sommet de l'enfant
+    for (int j = 0; j < child.getVertexCount(); j++) {
+      PVector vertex = child.getVertex(j);
+
+      // Calculer la distance euclidienne sur le plan X-Y
+      float dist = sqrt(pow(vertex.x - x, 2) + pow(vertex.y - y, 2));
+
+      // Si cette distance est la plus petite trouvée jusqu'à présent, mettre à jour
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestZ = vertex.z; // Mise à jour de l'altitude z la plus proche
+      }
+    }
+  }
+  println(closestZ);
+  // Retourner l'altitude z du point le plus proche
+  return closestZ;
+}
+
+Pylone[] creerPylones(PShape terrain, int nb){
+   Pylone[] pylones = new Pylone[nb];
+   
+   float debutX = 20;
+   float debutY = 100;
+   float finX = 40;
+   float finY = -115;
+   
+   float dt_x = 10*(finX - debutX) /nb;
+   float dt_y = 20*(finY - debutY) /nb;
+   
+   for (int i  = 0; i < nb; i++){
+      float x = debutX - i*dt_x;
+      float y = debutY - i*dt_x;
+      float z = findZForXY(x,y) + 190;
+      pylones[i] = new Pylone(new Vector(x,y,z));
+   }
+   
+  return pylones;
 }
