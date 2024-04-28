@@ -151,7 +151,7 @@ void bras(PShape struct, Vector hautGauche, Vector hautDroite, Vector basGauche,
 
 
   for (int i = 0; i < 4; i++) {
-    departFils[i] = rotateAxeZ(filBas, -i*HALF_PI);
+    departFils[i] = rotateAxeZ(filBas, i*HALF_PI);
   }
 
   struct.beginShape();
@@ -311,8 +311,7 @@ PShape pyl(float hauteur, float base, float angle, Vector[] filsBas, Vector[] fi
 
   Droite Dgauche = droiteFrom(basGauche, sommet);
   Droite Ddroite = droiteFrom(basDroite, sommet);
-  println(Dgauche);
-  println(Ddroite);
+ 
 
   structure.endShape();
   etage(structure, basGauche, basDroite, droiteFrom(basGauche, sommet), droiteFrom(basDroite, sommet), 0, 15, filsBas, filsHaut);
@@ -354,25 +353,57 @@ float findZForXY(float x, float y) {
       }
     }
   }
-  println(closestZ);
+  
   // Retourner l'altitude z du point le plus proche
   return closestZ;
+}
+
+
+Vector findSommet(float x, float y) {
+  float closestDist = Float.MAX_VALUE; // Initialise à une grande valeur
+  float closestZ = 0; // Altitude du point le plus proche
+  float closestX = 0;
+  float closestY = 0;
+  PVector vertex = new PVector(0,0,0);
+  // Parcourir chaque enfant du modèle
+  for (int i = 0; i < rocket.getChildCount(); i++) {
+    PShape child = rocket.getChild(i);
+
+    // Parcourir chaque sommet de l'enfant
+    for (int j = 0; j < child.getVertexCount(); j++) {
+       vertex = child.getVertex(j);
+
+      // Calculer la distance euclidienne sur le plan X-Y
+      float dist = sqrt(pow(vertex.x - x, 2) + pow(vertex.y - y, 2));
+
+      // Si cette distance est la plus petite trouvée jusqu'à présent, mettre à jour
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestZ = vertex.z; // Mise à jour de l'altitude z la plus proche
+        closestX = vertex.x;
+        closestY = vertex.y;
+      }
+    }
+  }
+  
+  // Retourner l'altitude z du point le plus proche
+  return new Vector(closestX, closestY , closestZ);
 }
 
 Pylone[] creerPylones(PShape terrain, int nb) {
   Pylone[] pylones = new Pylone[nb];
 
-  float debutX = 20;
-  float debutY = 100;
-  float finX = 40;
-  float finY = -115;
+  float debutX = -116;
+  float debutY = -37;
+  float finX = 70;
+  float finY = 140;
 
-  float dt_x = 10*(finX - debutX) /nb;
-  float dt_y = 20*(finY - debutY) /nb;
+  float dt_x = (finX - debutX) /nb;
+  float dt_y = (finY - debutY) /nb;
 
   for (int i  = 0; i < nb; i++) {
-    float x = debutX - i*dt_x;
-    float y = debutY - i*dt_x;
+    float x = debutX + i*dt_x;
+    float y = debutY + i*dt_x;
     float z = findZForXY(x, y) + 190;
     pylones[i] = new Pylone(new Vector(x, y, z));
   }

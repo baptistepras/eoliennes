@@ -71,7 +71,7 @@ PShape base(float hauteur) {
   struct.endShape();
 
 
-  //face au sol
+  //triangle
   struct.beginShape(QUADS);
   struct.vertex(-rayon/2, -rayon, hauteur);
   struct.vertex(-rayon/2, rayon, hauteur + R);
