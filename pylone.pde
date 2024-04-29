@@ -253,17 +253,17 @@ PShape pyl(float hauteur, float base, float orientationX, Vector[] filsBas, Vect
   Vector sommet = new Vector(0, 0, hauteur);
 
   //// Forme de base
-  //structure.beginShape();
-  //structure.vertex(cote, 0, 0);
-  //structure.vertex(0, 0, hauteur);
-  //structure.vertex(0, cote, 0);
-  //structure.vertex(0, 0, hauteur);
-  //structure.vertex(-cote, 0, 0);
-  //structure.vertex(0, 0, hauteur);
-  //structure.vertex(0, -cote, 0);
-  //structure.vertex(0, 0, hauteur);
-  //structure.vertex(0, hauteur, 0);
-  //structure.vertex(cote, 0, 0);
+  structure.beginShape();
+  structure.vertex(cote, 0, 0);
+  structure.vertex(0, 0, hauteur);
+  structure.vertex(0, cote, 0);
+  structure.vertex(0, 0, hauteur);
+  structure.vertex(-cote, 0, 0);
+  structure.vertex(0, 0, hauteur);
+  structure.vertex(0, -cote, 0);
+  structure.vertex(0, 0, hauteur);
+  structure.vertex(0, 0, hauteur);
+  structure.vertex(cote, 0, 0);
 
   Droite Dgauche = droiteFrom(basGauche, sommet);
   Droite Ddroite = droiteFrom(basDroite, sommet);
