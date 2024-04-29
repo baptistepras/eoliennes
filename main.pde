@@ -17,6 +17,7 @@
  BACKSPACE: retourner au point de départ
  H: afficher/désafficher les coordonnées
  R: afficher/désafficher le repère
+ T: activer/désactiver les collisions
  
  Boutons de modification du shader:
  ALT: activer/désactiver le shader
@@ -46,6 +47,7 @@ float dx;
 float dz;
 float avance_x = 2;
 float avance_z = 0.5;
+boolean col = true;
 boolean[] keys = new boolean[256];
 boolean[] keysCoded = new boolean[256];
 Vector pointAncrage = new Vector(0, -1.1*4/5, 4);
@@ -67,7 +69,7 @@ boolean afficherRepere = true;
 boolean afficherShader = true;
 
 // Variables structures
-int nbPylones = 16;
+int nbPylones = 12;
 Vector[] filsBas;
 Vector[] filsHaut;
 Pylone[] pylones;
@@ -163,6 +165,11 @@ void keyPressed() {
   if (keys['r'] || keys['R']) {
     afficherRepere = !afficherRepere;
   }
+  
+  // Activation/Désactivation collisions
+  if (keys['t'] || keys['T']) {
+    col = !col;
+  }
 
   // Retourner au point de départ
   if (keys[BACKSPACE]) {
@@ -217,9 +224,11 @@ void bouger() {
   if ((taille < 1.04 || dtaille < 0) && (taille > -0.02 || dtaille > 0)) {  // Empêche d'avoir des valeurs de taille incongrues
     taille += dtaille;
   }
-
-  float zallowed = findZForXY(tempoX, tempoY);
-  if (tempoZ > zallowed) {
+  
+  float zallowed = findZForXY(tempoX, tempoY) + 193;
+  if (tempoZ < zallowed+1 && col) {  // Nous replace au-dessus de la map si on était en dessous
+    posZ += avance_z;
+  } else if (tempoZ > zallowed || !col || dz > 0) {  // Collisions avec la map
     posX = tempoX;
     posY = tempoY;
     posZ = tempoZ;
@@ -288,9 +297,13 @@ int filCorrespond(int i) {
   if (i == 0 || i == 2) {
     return i;
   } else {
-    return 3;
-  }
-}
+    
+    if (i == 1){
+       return 3; 
+    }else{
+       return 1; 
+    }
+}}
 
 void afficheFils() {
   strokeWeight(1);
@@ -300,39 +313,41 @@ void afficheFils() {
     pushMatrix();
     translate(pylones[i].position.x, pylones[i].position.y, pylones[i].position.z);
     shape(pylModele);
+    popMatrix();
     noFill();
 
     // Fils du haut
     for (int j = 0; j < 3; j++) {
       int numero = filCorrespond(j);
-      float departx = filsHaut[j].x;
-      float departy = filsHaut[j].y;
-      float departz = filsHaut[j].z;
-      // vertex(departx, departy, departz);
-      float x = pylones[i+1].position.x - pylones[i].position.x+ filsHaut[numero].x;
-      float y = pylones[i+1].position.y - pylones[i].position.y + filsHaut[numero].y;
-      float z = pylones[i+1].position.z - pylones[i].position.z + filsHaut[numero].z ;
-      Vector pointMilieu = new Vector((departx + x)/2, (departy+y)/2, min(z, departz) * 0.6);
+      //vertex(filsBas[j].x, filsBas[j].y, filsBas[j].z);
+      float departx = pylones[i].position.x + filsHaut[j].x; 
+      float departy = pylones[i].position.y + filsHaut[j].y;
+      float departz = pylones[i].position.z + filsHaut[j].z; 
+      
+      float x = pylones[i+1].position.x + filsHaut[numero].x;
+      float y = pylones[i+1].position.y + filsHaut[numero].y;
+      float z = pylones[i+1].position.z + filsHaut[numero].z ;
+      Vector pointMilieu = new Vector((departx + x)/2, (departy+y)/2, (departz+z)/2 - 1.5 );
       bezier(departx, departy, departz, pointMilieu.x, pointMilieu.y, pointMilieu.z, pointMilieu.x, pointMilieu.y, pointMilieu.z, x, y, z);
-      //vertex(x, y, z);
     }
 
     // Fils du bas
     for (int j = 0; j < 3; j++) {
       int numero = filCorrespond(j);
       //vertex(filsBas[j].x, filsBas[j].y, filsBas[j].z);
-      float departx = filsBas[j].x;
-      float departy = filsBas[j].y;
-      float departz = filsBas[j].z;
-      float x = pylones[i+1].position.x - pylones[i].position.x+ filsBas[numero].x;
-      float y = pylones[i+1].position.y - pylones[i].position.y + filsBas[numero].y;
-      float z = pylones[i+1].position.z - pylones[i].position.z + filsBas[numero].z ;
-      //float ecartZ = abs(z - departz)/2;
-      Vector pointMilieu = new Vector((departx + x)/2, (departy+y)/2, min(z, departz) * 0.6);
+      float departx = pylones[i].position.x + filsBas[j].x; 
+      float departy = pylones[i].position.y + filsBas[j].y;
+      float departz = pylones[i].position.z + filsBas[j].z; 
+      
+      float x = pylones[i+1].position.x + filsBas[numero].x;
+      float y = pylones[i+1].position.y + filsBas[numero].y;
+      float z = pylones[i+1].position.z + filsBas[numero].z ;
+      
+      Vector pointMilieu = new Vector((departx + x)/2, (departy+y)/2, (departz+z)/2 - 1.5 );
       bezier(departx, departy, departz, pointMilieu.x, pointMilieu.y, pointMilieu.z, pointMilieu.x, pointMilieu.y, pointMilieu.z, x, y, z);
     }
-
-    popMatrix();
+    
+    
     if (i < 6) {
       pushMatrix();
       strokeWeight(2);

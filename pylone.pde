@@ -141,7 +141,7 @@ void bras(PShape struct, Vector hautGauche, Vector hautDroite, Vector basGauche,
   Vector filBas = new Vector(fil.x, fil.y, fil.z *0.92);
 
   for (int i = 0; i < 4; i++) {
-    departFils[i] = rotateAxeZ(filBas, i*HALF_PI);
+    departFils[i] = rotateAxeZ(filBas, -i*HALF_PI);
   }
 
   struct.beginShape();
