@@ -62,7 +62,7 @@ PShape base(float hauteur) {
 
   struct.endShape();
 
-  //triangle
+  //triorientationX
   struct.beginShape(QUADS);
   struct.vertex(-rayon/2, -rayon, hauteur);
   struct.vertex(-rayon/2, rayon, hauteur + R);
@@ -102,20 +102,20 @@ PShape base(float hauteur) {
   float centreY = rayon;
   float centreZ = hauteur + R/2;
   //new Vector(0, rayon, hauteur + rayonEol);
-  float x1, y1, z1, x2, y2, z2, angle1, angle2;
+  float x1, y1, z1, x2, y2, z2, orientationX1, orientationX2;
   struct.beginShape(QUADS);
   struct.strokeWeight(0); //noStroke();
   for (int i = 0; i < 50; i++) {
-    angle1 = (TWO_PI*i)/50.0;
-    angle2 = (TWO_PI*(i+1))/50.0;
+    orientationX1 = (TWO_PI*i)/50.0;
+    orientationX2 = (TWO_PI*(i+1))/50.0;
 
-    x1 = 0.8*rayonEol * cos(angle1) +centreX;
+    x1 = 0.8*rayonEol * cos(orientationX1) +centreX;
     y1 = centreY;
-    z1 = 0.8*rayonEol*sin(angle1)+ centreZ;
+    z1 = 0.8*rayonEol*sin(orientationX1)+ centreZ;
 
-    x2 = 0.8*rayonEol * cos(angle2) +centreX;
+    x2 = 0.8*rayonEol * cos(orientationX2) +centreX;
     y2 = centreY;
-    z2 = 0.8*rayonEol*sin(angle2)+ centreZ;
+    z2 = 0.8*rayonEol*sin(orientationX2)+ centreZ;
     
     struct.vertex(x1, y1, z1);
     struct.vertex(x1, y1 + decalageY, z1);
@@ -128,16 +128,16 @@ PShape base(float hauteur) {
   cylindre.beginShape();
   cylindre.fill(255, 255, 255);
   for (int i = 0; i < 200; i++) {
-    angle1 = (TWO_PI*i)/200.0;
-    angle2 = (TWO_PI*(i+1))/200.0;
+    orientationX1 = (TWO_PI*i)/200.0;
+    orientationX2 = (TWO_PI*(i+1))/200.0;
 
-    x1 = 0.8*rayonEol * cos(angle1) +centreX;
+    x1 = 0.8*rayonEol * cos(orientationX1) +centreX;
     y1 = centreY + decalageY ;
-    z1 = 0.8*rayonEol*sin(angle1)+ centreZ;
+    z1 = 0.8*rayonEol*sin(orientationX1)+ centreZ;
 
-    x2 = 0.8*rayonEol * cos(angle2) +centreX;
+    x2 = 0.8*rayonEol * cos(orientationX2) +centreX;
     y2 = centreY + decalageY;
-    z2 = 0.8*rayonEol*sin(angle2)+ centreZ;
+    z2 = 0.8*rayonEol*sin(orientationX2)+ centreZ;
     
     cylindre.vertex(x1, y1, z1);
     cylindre.vertex(x2, y2, z2);
@@ -148,16 +148,16 @@ PShape base(float hauteur) {
   cylindre2.beginShape();
   cylindre2.strokeWeight(2);
   for (int i = 0; i < 200; i++) {
-    angle1 = (TWO_PI*i)/200.0;
-    angle2 = (TWO_PI*(i+1))/200.0;
+    orientationX1 = (TWO_PI*i)/200.0;
+    orientationX2 = (TWO_PI*(i+1))/200.0;
 
-    x1 = 0.8*rayonEol * cos(angle1) +centreX;
+    x1 = 0.8*rayonEol * cos(orientationX1) +centreX;
     y1 = centreY ;
-    z1 = 0.8*rayonEol*sin(angle1)+ centreZ;
+    z1 = 0.8*rayonEol*sin(orientationX1)+ centreZ;
 
-    x2 = 0.8*rayonEol * cos(angle2) +centreX;
+    x2 = 0.8*rayonEol * cos(orientationX2) +centreX;
     y2 = centreY ;
-    z2 = 0.8*rayonEol*sin(angle2)+ centreZ;
+    z2 = 0.8*rayonEol*sin(orientationX2)+ centreZ;
     
     cylindre2.vertex(x1, y1, z1);
     cylindre2.vertex(x2, y2, z2);

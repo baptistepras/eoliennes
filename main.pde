@@ -38,10 +38,10 @@ AudioPlayer ambiance;
 float posX = -23;
 float posY = -39;
 float posZ = 22;
-float tmp = -HALF_PI;
-float dtmp;
-float angle = -HALF_PI;
-float dAngle;
+float orientationZ = -HALF_PI;
+float dorientationZ;
+float orientationX = -HALF_PI;
+float dorientationX;
 float dx;
 float dz;
 float avance_x = 2;
@@ -100,13 +100,13 @@ void keyPressed() {
 
   // Rotation vers la droite ou la gauche
   if (keys['q']  || keys['Q']) {
-    dAngle = -PI/200;  // Rotation vers la gauche
+    dorientationX = -PI/200;  // Rotation vers la gauche
     musique.play();
   } else if (keys['d']  || keys['D']) {
-    dAngle = PI/200;  // Rotation vers la droite
+    dorientationX = PI/200;  // Rotation vers la droite
     musique.play();
   } else {
-    dAngle = 0;
+    dorientationX = 0;
   }
 
   // Déplacement vers le bas ou le haut
@@ -120,11 +120,11 @@ void keyPressed() {
 
   // Rotation vers le bas ou le haut
   if (keysCoded[CONTROL]) {
-    dtmp = 0.01;  // Rotation vers le haut
+    dorientationZ = 0.01;  // Rotation vers le haut
   } else if (keysCoded[SHIFT]) {
-    dtmp= -0.01;  // Rotation vers le bas
+    dorientationZ= -0.01;  // Rotation vers le bas
   } else {
-    dtmp = 0.0;
+    dorientationZ = 0.0;
   }
 
   // Activation/Désactivation du shader
@@ -169,9 +169,9 @@ void keyPressed() {
     posX = -23;
     posY = -39;
     posZ = 22;
-    tmp = -HALF_PI;
-    dtmp = 0;
-    angle = -HALF_PI;
+    orientationZ = -HALF_PI;
+    dorientationZ = 0;
+    orientationX = -HALF_PI;
   }
 }
 
@@ -183,9 +183,9 @@ void keyReleased() {
   }
 
   dx = 0;
-  dAngle = 0;
+  dorientationX = 0;
   dz = 0;
-  dtmp = 0;
+  dorientationZ = 0;
   dajustement = 0;
   dtaille = 0;
   musique.pause();
@@ -196,14 +196,14 @@ void bouger() {
   tempoY = posY;
   tempoZ = posZ;
 
-  angle = (angle + dAngle) % TWO_PI;
-  if ((tmp > -3.14 || dtmp > 0) && (tmp < 0.0 || dtmp < 0)) {  // Empêche de faire un tour complet vers le haut/bas
-    tmp = (tmp + dtmp) % TWO_PI;
+  orientationX = (orientationX + dorientationX) % TWO_PI;
+  if ((orientationZ > -3.14 || dorientationZ > 0) && (orientationZ < 0.0 || dorientationZ < 0)) {  // Empêche de faire un tour complet vers le haut/bas
+    orientationZ = (orientationZ + dorientationZ) % TWO_PI;
   }
 
   if (dx != 0) {
-    tempoX += cos(angle)* dx * avance_x;
-    tempoY += sin(angle)* dx * avance_x;
+    tempoX += cos(orientationX)* dx * avance_x;
+    tempoY += sin(orientationX)* dx * avance_x;
   }
 
   if (tempoZ > -6.5 || dz > 0) {  // Pour ne pas aller sous la map
@@ -227,7 +227,29 @@ void bouger() {
 }
 
 void afficherPosition() {
-  return;
+  if (afficherTexte) {
+    camera();
+    noLights();
+    fill(0, 0, 0);
+    ortho();
+    //perspective();
+    translate(10, 10);
+    //box(10);
+    beginShape(QUADS);
+    stroke(0, 0, 0);
+    fill(255, 255, 255);
+    vertex(-10, -10, 0);
+    vertex(200, -10, 0);
+    vertex(200, 110, 0);
+    vertex(-10, 110, 0);
+    endShape();
+    fill(0, 0, 0);
+    text("Position x : "+ int(posX), 10, 10);
+    text("Position y : "+ int(posY), 10, 30);
+    text("Position z : "+ int(posZ), 10, 50);
+    text("Orientation horizontale : " + int((180/PI)*orientationX) + " degrés", 10, 70);
+    text("Orientation verticale : " + int((180/PI)*orientationZ) + " degrés", 10, 90);
+  }
 }
 
 void repere() {
@@ -346,7 +368,7 @@ void afficheFils() {
         0.2*(eolGauchePosz + pylones[i].position.z+ filsHaut[2].z)/2,
         pylones[i].position.x+ filsHaut[2].x, pylones[i].position.y+ filsHaut[2].y, pylones[i].position.z+ filsHaut[2].z);
 
-      bezier(eolGauchePosx, eolGauchePosy, eolGauchePosz,
+      bezier(eolDroitePosx, eolDroitePosy, eolDroitePosz,
         (eolDroitePosx + pylones[i].position.x+ filsBas[0].x)/2,
         (eolDroitePosy + pylones[i].position.y+ filsBas[0].y)/2,
         0.2*(eolDroitePosz + pylones[i].position.z+ filsBas[0].z)/2,
@@ -387,7 +409,7 @@ void afficheEol(Eolienne E) {
   rotateZ(3.5*PI/2);
   shape(p);
   translate(E.centrePale.x, E.centrePale.y, E.centrePale.z);
-  float theta = frameCount/-15.0;//L'angle des pales
+  float theta = frameCount/-15.0;//L'orientationX des pales
 
   // Première pale
   rotateY(theta);
@@ -476,7 +498,7 @@ void draw() {
   float fov = PI/3.0;
   float cameraZ = (height/2.0) / tan(fov/2.0);
   bouger();
-  camera(posX, posY, posZ, posX+sin(tmp)*cos(angle), posY+(1*sin(tmp)*sin(angle)), posZ+cos(tmp), 0, 0, -1);
+  camera(posX, posY, posZ, posX+sin(orientationZ)*cos(orientationX), posY+(1*sin(orientationZ)*sin(orientationX)), posZ+cos(orientationZ), 0, 0, -1);
   perspective(fov, float(width)/float(height), 1, 10000);
   lights();
   
@@ -500,27 +522,5 @@ void draw() {
   affEoliennes();
   
   // Affichage des coordonnées
-  if (afficherTexte) {
-    camera();
-    noLights();
-    fill(0, 0, 0);
-    ortho();
-    //perspective();
-    translate(10, 10);
-    //box(10);
-    beginShape(QUADS);
-    stroke(0, 0, 0);
-    fill(255, 255, 255);
-    vertex(-10, -10, 0);
-    vertex(200, -10, 0);
-    vertex(200, 110, 0);
-    vertex(-10, 110, 0);
-    endShape();
-    fill(0, 0, 0);
-    text("Position x : "+ int(posX), 10, 10);
-    text("Position y : "+ int(posY), 10, 30);
-    text("Position z : "+ int(posZ), 10, 50);
-    text("Orientation horizontale : " + int((180/PI)*angle) + " degrés", 10, 70);
-    text("Orientation verticale : " + int((180/PI)*tmp) + " degrés", 10, 90);
-  }
+  afficherPosition();
 }

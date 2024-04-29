@@ -123,7 +123,7 @@ void drawlignePylon(PShape struct, Vector A, Vector B) {
 }
 
 Vector rotateAxeZ(Vector v, float theta) {
-  //Calcule rotation d'un point autour de l'axe z d'un angle theta
+  //Calcule rotation d'un point autour de l'axe z d'un orientationX theta
   return new Vector(v.x*cos(theta) - v.y*sin(theta), v.x*sin(theta)+v.y*cos(theta), v.z);
 }
 
@@ -242,7 +242,7 @@ void etage(PShape structure, Vector Pgauche, Vector Pdroite, Droite Dgauche, Dro
   }
 }
 
-PShape pyl(float hauteur, float base, float angle, Vector[] filsBas, Vector[] filsHaut) {
+PShape pyl(float hauteur, float base, float orientationX, Vector[] filsBas, Vector[] filsHaut) {
   float cote = sqrt(2) * base;
   PShape pylone = createShape();
   strokeWeight(1);
@@ -252,18 +252,18 @@ PShape pyl(float hauteur, float base, float angle, Vector[] filsBas, Vector[] fi
   Vector basDroite = new Vector(cote, 0, 0);
   Vector sommet = new Vector(0, 0, hauteur);
 
-  // Forme de base
-  structure.beginShape();
-  structure.vertex(cote, 0, 0);
-  structure.vertex(0, 0, hauteur);
-  structure.vertex(0, cote, 0);
-  structure.vertex(0, 0, hauteur);
-  structure.vertex(-cote, 0, 0);
-  structure.vertex(0, 0, hauteur);
-  structure.vertex(0, -cote, 0);
-  structure.vertex(0, 0, hauteur);
-  structure.vertex(0, hauteur, 0);
-  structure.vertex(cote, 0, 0);
+  //// Forme de base
+  //structure.beginShape();
+  //structure.vertex(cote, 0, 0);
+  //structure.vertex(0, 0, hauteur);
+  //structure.vertex(0, cote, 0);
+  //structure.vertex(0, 0, hauteur);
+  //structure.vertex(-cote, 0, 0);
+  //structure.vertex(0, 0, hauteur);
+  //structure.vertex(0, -cote, 0);
+  //structure.vertex(0, 0, hauteur);
+  //structure.vertex(0, hauteur, 0);
+  //structure.vertex(cote, 0, 0);
 
   Droite Dgauche = droiteFrom(basGauche, sommet);
   Droite Ddroite = droiteFrom(basDroite, sommet);
@@ -275,60 +275,48 @@ PShape pyl(float hauteur, float base, float angle, Vector[] filsBas, Vector[] fi
 }
 
 float findZForXY(float x, float y) {
-  float closestDist = Float.MAX_VALUE; // Initialise à une grande valeur
-  float closestZ = 0; // Altitude du point le plus proche
+  float closestDist = Float.MAX_VALUE; 
+  float closestZ = 0; 
 
-  // Parcourir chaque enfant du modèle
   for (int i = 0; i < rocket.getChildCount(); i++) {
     PShape child = rocket.getChild(i);
-
-    // Parcourir chaque sommet de l'enfant
+   
     for (int j = 0; j < child.getVertexCount(); j++) {
       PVector vertex = child.getVertex(j);
-
-      // Calculer la distance euclidienne sur le plan X-Y
       float dist = sqrt(pow(vertex.x - x, 2) + pow(vertex.y - y, 2));
 
-      // Si cette distance est la plus petite trouvée jusqu'à présent, mettre à jour
       if (dist < closestDist) {
         closestDist = dist;
-        closestZ = vertex.z; // Mise à jour de l'altitude z la plus proche
+        closestZ = vertex.z; 
       }
     }
   }
-
-  // Retourner l'altitude z du point le plus proche
   return closestZ;
 }
 
 Vector findSommet(float x, float y) {
-  float closestDist = Float.MAX_VALUE; // Initialise à une grande valeur
-  float closestZ = 0; // Altitude du point le plus proche
+  float closestDist = Float.MAX_VALUE;
+  float closestZ = 0;
   float closestX = 0;
   float closestY = 0;
   PVector vertex = new PVector(0, 0, 0);
-  // Parcourir chaque enfant du modèle
+  
   for (int i = 0; i < rocket.getChildCount(); i++) {
     PShape child = rocket.getChild(i);
 
-    // Parcourir chaque sommet de l'enfant
     for (int j = 0; j < child.getVertexCount(); j++) {
       vertex = child.getVertex(j);
-
-      // Calculer la distance euclidienne sur le plan X-Y
       float dist = sqrt(pow(vertex.x - x, 2) + pow(vertex.y - y, 2));
 
-      // Si cette distance est la plus petite trouvée jusqu'à présent, mettre à jour
       if (dist < closestDist) {
         closestDist = dist;
-        closestZ = vertex.z; // Mise à jour de l'altitude z la plus proche
+        closestZ = vertex.z;
         closestX = vertex.x;
         closestY = vertex.y;
       }
     }
   }
 
-  // Retourner l'altitude z du point le plus proche
   return new Vector(closestX, closestY, closestZ);
 }
 
