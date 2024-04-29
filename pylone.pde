@@ -4,9 +4,9 @@ class Vector {
   float z;
 
   Vector(float a, float b, float c) {
-    x = roundToTwoDecimalPlaces(a);
-    y  = roundToTwoDecimalPlaces(b);
-    z = roundToTwoDecimalPlaces(c);
+    x = a;
+    y  = b;
+    z = c;
   }
 
   String toString() {
@@ -200,10 +200,6 @@ void point(PShape struct, Vector Point) {
   struct.vertex(Point.x, Point.y, Point.z);
 }
 
-float roundToTwoDecimalPlaces(float number) {
-  // return round(number * 100) / 100;
-  return number;
-}
 
 Droite symetrieDroite(Droite D) {
   return new Droite(symetrie(D.depart), symetrie(D.v));

@@ -69,7 +69,7 @@ boolean afficherRepere = true;
 boolean afficherShader = true;
 
 // Variables structures
-int nbPylones = 12;
+int nbPylones = 14;
 Vector[] filsBas;
 Vector[] filsHaut;
 Pylone[] pylones;
@@ -425,7 +425,7 @@ void afficheEol(Eolienne E) {
   shape(p);
   translate(E.centrePale.x, E.centrePale.y, E.centrePale.z);
   float theta = frameCount/-15.0;//L'orientationX des pales
-
+  
   // Première pale
   rotateY(theta);
   shape(pal);

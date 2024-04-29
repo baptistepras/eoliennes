@@ -210,7 +210,7 @@ PShape pale(float hauteur) {
    total.addChild(p1);
    total.addChild(p2);
  
-  return p;
+  return total;
 }
 
 PShape modeleEolienne(float hauteur) {
