@@ -116,7 +116,7 @@ PShape base(float hauteur) {
     x2 = 0.8*rayonEol * cos(orientationX2) +centreX;
     y2 = centreY;
     z2 = 0.8*rayonEol*sin(orientationX2)+ centreZ;
-    
+
     struct.vertex(x1, y1, z1);
     struct.vertex(x1, y1 + decalageY, z1);
 
@@ -138,7 +138,7 @@ PShape base(float hauteur) {
     x2 = 0.8*rayonEol * cos(orientationX2) +centreX;
     y2 = centreY + decalageY;
     z2 = 0.8*rayonEol*sin(orientationX2)+ centreZ;
-    
+
     cylindre.vertex(x1, y1, z1);
     cylindre.vertex(x2, y2, z2);
   }
@@ -158,7 +158,7 @@ PShape base(float hauteur) {
     x2 = 0.8*rayonEol * cos(orientationX2) +centreX;
     y2 = centreY ;
     z2 = 0.8*rayonEol*sin(orientationX2)+ centreZ;
-    
+
     cylindre2.vertex(x1, y1, z1);
     cylindre2.vertex(x2, y2, z2);
   }
@@ -176,40 +176,31 @@ PShape pale(float hauteur) {
   PShape total = createShape(GROUP);
   PShape p1 = createShape();
   PShape p2 = createShape();
-  
-  
-  
+
   float larg = rayon *0.35;
   float haut = larg * 2;
   float debutZ = sqrt(rayon*rayon - (larg *larg)/4 );
   float profondeur = larg;
   float hautPal = 70*larg;
   //p.beginShape(QUADS);
-  
-  //
 
+  p1.beginShape();
+  p1.vertex(3.5* larg, 0, haut+debutZ);
+  p1.bezierVertex(3.5*larg, 0, haut+debutZ, 0, 0, haut+debutZ+hautPal, -3.5*larg, 0, haut+debutZ);
+  p1.vertex(-3.5 * larg, 0, haut  + debutZ);
+  p1.vertex(3.5 * larg, 0, haut  + debutZ);
+  p1.endShape();
 
-  
-    
-    p1.beginShape();
-    p1.vertex(3.5* larg, 0, haut+debutZ);
-    p1.bezierVertex(3.5*larg, 0, haut+debutZ,  0, 0, haut+debutZ+hautPal, -3.5*larg, 0, haut+debutZ);
-    p1.vertex(-3.5 * larg, 0 , haut  + debutZ);
-    p1.vertex(3.5 * larg, 0 , haut  + debutZ);
-    p1.endShape();
-    
- 
- 
-    p2.beginShape(QUADS);
-    p2.vertex( larg/2, 0, debutZ);
-    p2.vertex(  larg/2, 0, debutZ+haut);
-    p2.vertex(  -larg/2, 0, debutZ + haut);
-    p2.vertex( -larg/2, 0, debutZ );
-    p2.endShape();
-   
-   total.addChild(p1);
-   total.addChild(p2);
- 
+  p2.beginShape(QUADS);
+  p2.vertex( larg/2, 0, debutZ);
+  p2.vertex(  larg/2, 0, debutZ+haut);
+  p2.vertex(  -larg/2, 0, debutZ + haut);
+  p2.vertex( -larg/2, 0, debutZ );
+  p2.endShape();
+
+  total.addChild(p1);
+  total.addChild(p2);
+
   return total;
 }
 

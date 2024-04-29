@@ -1,8 +1,10 @@
 /* Projet IGSD
  Raphael LEONARDI, Baptiste PRAS, LDDIM2 Groupe 1
  
- Penser à importer Minim ou à commenter les lignes qui y sont liées:
+ Penser à importer Minim et à décommenter les lignes qui y sont liées
+ si vous voulez avoir la musique:
  Sketch -> Importer une bibliothèque -> Minim
+ Lignes: 35 -> 38, 111, 114, 209, 496 -> 499
  
  Boutons de déplacement:
  Z: avancer
@@ -18,6 +20,7 @@
  H: afficher/désafficher les coordonnées
  R: afficher/désafficher le repère
  T: activer/désactiver les collisions
+ F: activer/désactiver la vue FPS
  
  Boutons de modification du shader:
  ALT: activer/désactiver le shader
@@ -30,10 +33,10 @@
  */
 
 // Variables musique
-import ddf.minim.*;
-Minim minim;
-AudioPlayer musique;
-AudioPlayer ambiance;
+// import ddf.minim.*;  // <- Voir explications ligne 4 avant de décommenter
+// Minim minim;  // <- Voir explications ligne 4 avant de décommenter
+// AudioPlayer musique;  // Easteregg  <- Voir explications ligne 4 avant de décommenter
+// AudioPlayer ambiance;  // Musique d'ambiance  <- Voir explications ligne 4 avant de décommenter
 
 // Variables caméra
 float posX = -23;
@@ -48,6 +51,8 @@ float dz;
 float avance_x = 2;
 float avance_z = 0.5;
 boolean col = true;
+boolean fps = false;
+boolean altMin = false;
 boolean[] keys = new boolean[256];
 boolean[] keysCoded = new boolean[256];
 Vector pointAncrage = new Vector(0, -1.1*4/5, 4);
@@ -103,18 +108,18 @@ void keyPressed() {
   // Rotation vers la droite ou la gauche
   if (keys['q']  || keys['Q']) {
     dorientationX = -PI/200;  // Rotation vers la gauche
-    musique.play();
+    // musique.play();  // <- Voir explications ligne 4 avant de décommenter
   } else if (keys['d']  || keys['D']) {
     dorientationX = PI/200;  // Rotation vers la droite
-    musique.play();
+    // musique.play();  // <- Voir explications ligne 4 avant de décommenter
   } else {
     dorientationX = 0;
   }
-
   // Déplacement vers le bas ou le haut
   if (keysCoded[UP]) {
     dz = avance_z;  // Déplacement vers le haut
-  } else if (keysCoded[DOWN]) {
+    altMin = false;
+  } else if (keysCoded[DOWN] && (!altMin || !col)) {
     dz = -1*avance_z;  // Déplacement vers le bas
   } else {
     dz = 0;
@@ -160,15 +165,21 @@ void keyPressed() {
   if (keys['h'] || keys['H']) {
     afficherTexte = !afficherTexte;
   }
-  
+
   // Affichage/Désaffichage du repère
   if (keys['r'] || keys['R']) {
     afficherRepere = !afficherRepere;
   }
-  
+
   // Activation/Désactivation collisions
-  if (keys['t'] || keys['T']) {
+  if ((keys['t'] || keys['T']) && !fps) {
     col = !col;
+  }
+
+  // Activation/Désactivation de la vue FPS
+  if (keys['f'] || keys['F']) {
+    altMin = true;
+    fps = !fps;
   }
 
   // Retourner au point de départ
@@ -195,7 +206,7 @@ void keyReleased() {
   dorientationZ = 0;
   dajustement = 0;
   dtaille = 0;
-  musique.pause();
+  // musique.pause();  // <- Voir explications ligne 4 avant de décommenter
 }
 
 void bouger() {
@@ -213,25 +224,49 @@ void bouger() {
     tempoY += sin(orientationX)* dx * avance_x;
   }
 
+  // Hauteur minimale
   if (tempoZ > -6.5 || dz > 0) {  // Pour ne pas aller sous la map
     tempoZ += dz;
   }
-  
+
+  // Contrôle de la hauteur de la vallée
   if ((ajustement < 13.2 || dajustement < 0) && (ajustement > -9.5 || dajustement > 0)) { // Empêche d'avoir des valeurs de ajustement incongrues
     ajustement += dajustement;
   }
-  
+
+  // Contrôle de l'épaisseur des lignes
   if ((taille < 1.04 || dtaille < 0) && (taille > -0.02 || dtaille > 0)) {  // Empêche d'avoir des valeurs de taille incongrues
     taille += dtaille;
   }
-  
+
+  // Contrôle du Z sur les déplacements
   float zallowed = findZForXY(tempoX, tempoY) + 193;
-  if (tempoZ < zallowed+1 && col) {  // Nous replace au-dessus de la map si on était en dessous
+  if (fps) {  // Vue FPS
+    if (tempoZ < zallowed-0.5) {
+      posZ += avance_z;  // Monter
+    } else if (tempoZ > zallowed+0.5) {
+      posZ += -1*avance_z;  // Descendre
+    } else if (tempoX < 128 && tempoX > -136 && tempoY < 160 && tempoY > -159) {  // Emêche de sortir de la map
+      posX = tempoX;
+      posY = tempoY;
+    }
+  }
+
+  // Vue classique
+  else if (tempoZ < zallowed && col) {  // Nous replace au-dessus de la map si on était en dessous
     posZ += avance_z;
-  } else if (tempoZ > zallowed || !col || dz > 0) {  // Collisions avec la map
+    altMin = true;
+  } else if ((tempoZ > zallowed || !col || dz > 0) && (tempoX < 128 && tempoX > -136 && tempoY < 160 && tempoY > -159)) {  // Collisions avec la map
     posX = tempoX;
     posY = tempoY;
     posZ = tempoZ;
+    // Empêche de trembler si on reste appuyer vers le bas en étant au minimum
+    if (tempoZ < zallowed+0.5 && col) {
+      altMin = true;
+      dz = 0;
+    } else {
+      altMin = false;
+    }
   }
 }
 
@@ -297,13 +332,14 @@ int filCorrespond(int i) {
   if (i == 0 || i == 2) {
     return i;
   } else {
-    
-    if (i == 1){
-       return 3; 
-    }else{
-       return 1; 
+
+    if (i == 1) {
+      return 3;
+    } else {
+      return 1;
     }
-}}
+  }
+}
 
 void afficheFils() {
   strokeWeight(1);
@@ -320,10 +356,10 @@ void afficheFils() {
     for (int j = 0; j < 3; j++) {
       int numero = filCorrespond(j);
       //vertex(filsBas[j].x, filsBas[j].y, filsBas[j].z);
-      float departx = pylones[i].position.x + filsHaut[j].x; 
+      float departx = pylones[i].position.x + filsHaut[j].x;
       float departy = pylones[i].position.y + filsHaut[j].y;
-      float departz = pylones[i].position.z + filsHaut[j].z; 
-      
+      float departz = pylones[i].position.z + filsHaut[j].z;
+
       float x = pylones[i+1].position.x + filsHaut[numero].x;
       float y = pylones[i+1].position.y + filsHaut[numero].y;
       float z = pylones[i+1].position.z + filsHaut[numero].z ;
@@ -335,19 +371,19 @@ void afficheFils() {
     for (int j = 0; j < 3; j++) {
       int numero = filCorrespond(j);
       //vertex(filsBas[j].x, filsBas[j].y, filsBas[j].z);
-      float departx = pylones[i].position.x + filsBas[j].x; 
-      float departy = pylones[i].position.y + filsBas[j].y;
-      float departz = pylones[i].position.z + filsBas[j].z; 
       
+      float departx = pylones[i].position.x + filsBas[j].x;
+      float departy = pylones[i].position.y + filsBas[j].y;
+      float departz = pylones[i].position.z + filsBas[j].z;
+
       float x = pylones[i+1].position.x + filsBas[numero].x;
       float y = pylones[i+1].position.y + filsBas[numero].y;
       float z = pylones[i+1].position.z + filsBas[numero].z ;
-      
+
       Vector pointMilieu = new Vector((departx + x)/2, (departy+y)/2, (departz+z)/2 - 1.5 );
       bezier(departx, departy, departz, pointMilieu.x, pointMilieu.y, pointMilieu.z, pointMilieu.x, pointMilieu.y, pointMilieu.z, x, y, z);
     }
-    
-    
+
     if (i < 6) {
       pushMatrix();
       strokeWeight(2);
@@ -356,6 +392,7 @@ void afficheFils() {
       float eolGauchePosx = eoliennes[i].position.x + pointAncrage.x;
       float eolGauchePosy = eoliennes[i].position.y + pointAncrage.y;
       float eolGauchePosz = eoliennes[i].position.z + pointAncrage.z;
+      
       // Eolienne droite
       float eolDroitePosx = eoliennes[i+6].position.x + pointAncrage.x;
       float eolDroitePosy = eoliennes[i+6].position.y + pointAncrage.y;
@@ -372,7 +409,7 @@ void afficheFils() {
         0.2*(eolGauchePosz + pylones[i].position.z + filsBas[2].z)/2,
         pylones[i].position.x+ filsBas[2].x, pylones[i].position.y+ filsBas[2].y,
         pylones[i].position.z+ filsBas[2].z);
-        
+
       //vertex(pylones[i].position.x+ filsBas[2].x, pylones[i].position.y+ filsBas[2].y, pylones[i].position.z+ filsBas[2].z);
       bezier(eolGauchePosx, eolGauchePosy, eolGauchePosz,
         (eolGauchePosx + pylones[i].position.x+ filsHaut[2].x)/2,
@@ -401,7 +438,7 @@ void afficheFils() {
         (eolDroitePosy + pylones[i].position.y+ filsHaut[0].y)/2,
         0.2*(eolDroitePosz + pylones[i].position.z+ filsHaut[0].z)/2,
         pylones[i].position.x+ filsHaut[0].x, pylones[i].position.y+ filsHaut[0].y, pylones[i].position.z+ filsHaut[0].z);
-      
+
       endShape();
       popMatrix();
       strokeWeight(1);
@@ -425,7 +462,7 @@ void afficheEol(Eolienne E) {
   shape(p);
   translate(E.centrePale.x, E.centrePale.y, E.centrePale.z);
   float theta = frameCount/-15.0;//L'orientationX des pales
-  
+
   // Première pale
   rotateY(theta);
   shape(pal);
@@ -456,10 +493,10 @@ void setup() {
   pointAncrage = rotateAxeZ(pointAncrage, 3.5*PI/2);
 
   // Import de tous les fichiers
-  minim = new Minim(this);
-  musique = minim.loadFile("musique.mp3");
-  ambiance = minim.loadFile("MC.mp3");
-  ambiance.loop();
+  // minim = new Minim(this);  // <- Voir explications ligne 4 avant de décommenter
+  // musique = minim.loadFile("musique.mp3");  // <- Voir explications ligne 4 avant de décommenter
+  // ambiance = minim.loadFile("MC.mp3");  // <- Voir explications ligne 4 avant de décommenter
+  // ambiance.loop();  // <- Voir explications ligne 4 avant de décommenter
   shader = loadShader( "fragmentShader.glsl", "vertexShader.glsl");
   ciel = loadImage("ciel.jpg");
   textureimg = loadImage("StAuban_texture.jpg");
@@ -509,14 +546,14 @@ void setup() {
 void draw() {
   // Initialisation
   background(ciel);
-  
+
   float fov = PI/3.0;
   float cameraZ = (height/2.0) / tan(fov/2.0);
   bouger();
   camera(posX, posY, posZ, posX+sin(orientationZ)*cos(orientationX), posY+(1*sin(orientationZ)*sin(orientationX)), posZ+cos(orientationZ), 0, 0, -1);
   perspective(fov, float(width)/float(height), 1, 10000);
   lights();
-  
+
   if (afficherShader) {
     shader.set("ajustement", ajustement);
     shader.set("taille", taille);
@@ -526,7 +563,7 @@ void draw() {
   textureMode(NORMAL);
   shape(rocket);
   resetShader();
-  
+
   // Repère
   if (afficherRepere) {
     repere();
@@ -535,7 +572,7 @@ void draw() {
   // Fils et éoliennes
   afficheFils();
   affEoliennes();
-  
+
   // Affichage des coordonnées
   afficherPosition();
 }
