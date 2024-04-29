@@ -173,71 +173,43 @@ PShape base(float hauteur) {
 
 PShape pale(float hauteur) {
   float rayon = 0.8*(hauteur/10);
-  PShape p = createShape();
+  PShape total = createShape(GROUP);
+  PShape p1 = createShape();
+  PShape p2 = createShape();
+  
+  
+  
   float larg = rayon *0.35;
   float haut = larg * 2;
   float debutZ = sqrt(rayon*rayon - (larg *larg)/4 );
   float profondeur = larg;
-  float hautPal = 60*larg;
-  p.beginShape(QUADS);
-  
-  p.vertex( larg/2, 0, debutZ);
-  p.vertex(  -larg/2, 0, debutZ);
-  p.vertex(  -larg/2, 0, debutZ + haut);
-  p.vertex( larg/2, 0, debutZ + haut);
-
-  p.vertex( larg/2, -profondeur, debutZ);
-  p.vertex(  -larg/2, -profondeur, debutZ);
-  p.vertex(  -larg/2, -profondeur, debutZ + haut);
-  p.vertex( larg/2, -profondeur, debutZ + haut);
-
-  p.vertex(larg/2, 0, debutZ);
-  p.vertex(larg/2, -profondeur, debutZ);
-  p.vertex(larg/2, -profondeur, debutZ + haut);
-  p.vertex(larg/2, 0, debutZ + haut);
-
-  p.vertex(-larg/2, 0, debutZ);
-  p.vertex(-larg/2, -profondeur, debutZ);
-  p.vertex(-larg/2, -profondeur, debutZ + haut);
-  p.vertex(-larg/2, 0, debutZ + haut);
-
-  p.vertex(larg/2, 0, haut + debutZ);
-  p.vertex(-larg/2, 0, haut + debutZ);
-  p.vertex(-larg/2, -profondeur, haut + debutZ);
-  p.vertex(larg/2, -profondeur, haut + debutZ);
-
-  //p.vertex(3.5*larg, 0, haut+debutZ);
-  //p.vertex(0, 0, haut+debutZ+hautPal);
-  //p.vertex(-3.5*larg, 0, haut+debutZ);
-  //p.vertex(3.5*larg, 0, haut+debutZ);
-   
-
-
-
-//  p.vertex(3.5*larg, -profondeur, haut+debutZ);
-//  p.vertex(0, -profondeur, haut+debutZ+hautPal);
-//  p.vertex(-3.5*larg, -profondeur, haut+debutZ);
-//  p.vertex(3.5*larg, -profondeur, haut+debutZ);
-
-//  p.vertex(0, 0, haut+debutZ+hautPal);
-//  p.vertex(0, -profondeur, haut+debutZ+hautPal);
-//  p.vertex(3.5*larg, -profondeur, haut+debutZ);
-//  p.vertex(3.5*larg, 0, haut+debutZ);
-
-//  p.vertex(0, 0, haut+debutZ+hautPal);
-//  p.vertex(0, -profondeur, haut+debutZ+hautPal);
-//  p.vertex(-3.5*larg, -profondeur, haut+debutZ);
-//  p.vertex(-3.5*larg, 0, haut+debutZ);
-    p.endShape();
-    p.beginShape();
-    p.vertex(3.5 *larg, 0, haut+debutZ);
-    p.bezierVertex(3.5*larg, 0, haut+debutZ,  0, 0, haut+debutZ+hautPal, -3.5*larg, 0, haut+debutZ);
-    
-    p.endShape();
-  
-
+  float hautPal = 70*larg;
   //p.beginShape(QUADS);
-  //p.vertex(
+  
+  //
+
+
+  
+    
+    p1.beginShape();
+    p1.vertex(3.5* larg, 0, haut+debutZ);
+    p1.bezierVertex(3.5*larg, 0, haut+debutZ,  0, 0, haut+debutZ+hautPal, -3.5*larg, 0, haut+debutZ);
+    p1.vertex(-3.5 * larg, 0 , haut  + debutZ);
+    p1.vertex(3.5 * larg, 0 , haut  + debutZ);
+    p1.endShape();
+    
+ 
+ 
+    p2.beginShape(QUADS);
+    p2.vertex( larg/2, 0, debutZ);
+    p2.vertex(  larg/2, 0, debutZ+haut);
+    p2.vertex(  -larg/2, 0, debutZ + haut);
+    p2.vertex( -larg/2, 0, debutZ );
+    p2.endShape();
+   
+   total.addChild(p1);
+   total.addChild(p2);
+ 
   return p;
 }
 
