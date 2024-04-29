@@ -178,7 +178,7 @@ PShape pale(float hauteur) {
   float haut = larg * 2;
   float debutZ = sqrt(rayon*rayon - (larg *larg)/4 );
   float profondeur = larg;
-  float hautPal = 30*larg;
+  float hautPal = 60*larg;
   p.beginShape(QUADS);
   
   p.vertex( larg/2, 0, debutZ);
@@ -206,27 +206,36 @@ PShape pale(float hauteur) {
   p.vertex(-larg/2, -profondeur, haut + debutZ);
   p.vertex(larg/2, -profondeur, haut + debutZ);
 
-  p.vertex(3.5*larg, 0, haut+debutZ);
-  p.vertex(0, 0, haut+debutZ+hautPal);
-  p.vertex(-3.5*larg, 0, haut+debutZ);
-  p.vertex(3.5*larg, 0, haut+debutZ);
+  //p.vertex(3.5*larg, 0, haut+debutZ);
+  //p.vertex(0, 0, haut+debutZ+hautPal);
+  //p.vertex(-3.5*larg, 0, haut+debutZ);
+  //p.vertex(3.5*larg, 0, haut+debutZ);
+   
 
-  p.vertex(3.5*larg, -profondeur, haut+debutZ);
-  p.vertex(0, -profondeur, haut+debutZ+hautPal);
-  p.vertex(-3.5*larg, -profondeur, haut+debutZ);
-  p.vertex(3.5*larg, -profondeur, haut+debutZ);
 
-  p.vertex(0, 0, haut+debutZ+hautPal);
-  p.vertex(0, -profondeur, haut+debutZ+hautPal);
-  p.vertex(3.5*larg, -profondeur, haut+debutZ);
-  p.vertex(3.5*larg, 0, haut+debutZ);
 
-  p.vertex(0, 0, haut+debutZ+hautPal);
-  p.vertex(0, -profondeur, haut+debutZ+hautPal);
-  p.vertex(-3.5*larg, -profondeur, haut+debutZ);
-  p.vertex(-3.5*larg, 0, haut+debutZ);
+//  p.vertex(3.5*larg, -profondeur, haut+debutZ);
+//  p.vertex(0, -profondeur, haut+debutZ+hautPal);
+//  p.vertex(-3.5*larg, -profondeur, haut+debutZ);
+//  p.vertex(3.5*larg, -profondeur, haut+debutZ);
+
+//  p.vertex(0, 0, haut+debutZ+hautPal);
+//  p.vertex(0, -profondeur, haut+debutZ+hautPal);
+//  p.vertex(3.5*larg, -profondeur, haut+debutZ);
+//  p.vertex(3.5*larg, 0, haut+debutZ);
+
+//  p.vertex(0, 0, haut+debutZ+hautPal);
+//  p.vertex(0, -profondeur, haut+debutZ+hautPal);
+//  p.vertex(-3.5*larg, -profondeur, haut+debutZ);
+//  p.vertex(-3.5*larg, 0, haut+debutZ);
+    p.endShape();
+    p.beginShape();
+    p.vertex(3.5 *larg, 0, haut+debutZ);
+    p.bezierVertex(3.5*larg, 0, haut+debutZ,  0, 0, haut+debutZ+hautPal, -3.5*larg, 0, haut+debutZ);
+    
+    p.endShape();
   
-  p.endShape();
+
   //p.beginShape(QUADS);
   //p.vertex(
   return p;
