@@ -33,10 +33,10 @@
  */
 
 // Variables musique
-// import ddf.minim.*;  // <- Voir explications ligne 4 avant de décommenter
-// Minim minim;  // <- Voir explications ligne 4 avant de décommenter
+import ddf.minim.*;  // <- Voir explications ligne 4 avant de décommenter
+Minim minim;  // <- Voir explications ligne 4 avant de décommenter
 // AudioPlayer musique;  // Easteregg  <- Voir explications ligne 4 avant de décommenter
-// AudioPlayer ambiance;  // Musique d'ambiance  <- Voir explications ligne 4 avant de décommenter
+AudioPlayer ambiance;  // Musique d'ambiance  <- Voir explications ligne 4 avant de décommenter
 
 // Variables caméra
 float posX = -23;
@@ -493,10 +493,10 @@ void setup() {
   pointAncrage = rotateAxeZ(pointAncrage, 3.5*PI/2);
 
   // Import de tous les fichiers
-  // minim = new Minim(this);  // <- Voir explications ligne 4 avant de décommenter
+  minim = new Minim(this);  // <- Voir explications ligne 4 avant de décommenter
   // musique = minim.loadFile("musique.mp3");  // <- Voir explications ligne 4 avant de décommenter
-  // ambiance = minim.loadFile("MC.mp3");  // <- Voir explications ligne 4 avant de décommenter
-  // ambiance.loop();  // <- Voir explications ligne 4 avant de décommenter
+  ambiance = minim.loadFile("MC.mp3");  // <- Voir explications ligne 4 avant de décommenter
+  ambiance.loop();  // <- Voir explications ligne 4 avant de décommenter
   shader = loadShader( "fragmentShader.glsl", "vertexShader.glsl");
   ciel = loadImage("ciel.jpg");
   textureimg = loadImage("StAuban_texture.jpg");
